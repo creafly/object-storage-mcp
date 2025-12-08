@@ -1,0 +1,145 @@
+{
+  "environment_variables": [
+    {
+      "name": "AWS_ACCESS_KEY_ID",
+      "type": "string",
+      "default": "",
+      "description": "AWS Access Key ID для доступа к S3. Обязательный параметр.",
+      "required": true,
+      "validation": {
+        "min_length": 16
+      },
+      "example": "AKIAIOSFODNN7EXAMPLE"
+    },
+    {
+      "name": "AWS_SECRET_ACCESS_KEY",
+      "type": "string",
+      "default": "",
+      "description": "AWS Secret Access Key для доступа к S3. Обязательный параметр. Храните в секрете!",
+      "required": true,
+      "validation": {
+        "min_length": 20
+      },
+      "example": "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+    },
+    {
+      "name": "AWS_REGION",
+      "type": "string",
+      "default": "us-east-1",
+      "description": "AWS регион, в котором находится бакет S3",
+      "required": false,
+      "validation": {
+        "pattern": "^[a-z]{2}-[a-z]+-[0-9]+$"
+      },
+      "example": "us-east-1"
+    },
+    {
+      "name": "S3_ENDPOINT_URL",
+      "type": "string",
+      "default": "",
+      "description": "Кастомный endpoint URL для S3-совместимых хранилищ (MinIO, Yandex Object Storage, и т.д.). Оставьте пустым для AWS S3.",
+      "required": false,
+      "validation": {
+        "format": "url"
+      },
+      "example": "https://storage.yandexcloud.net"
+    },
+    {
+      "name": "S3_BUCKET_NAME",
+      "type": "string",
+      "default": "",
+      "description": "Имя бакета S3 по умолчанию. Обязательный параметр.",
+      "required": true,
+      "validation": {
+        "min_length": 3,
+        "max_length": 63,
+        "pattern": "^[a-z0-9][a-z0-9\\-]*[a-z0-9]$"
+      },
+      "example": "my-bucket-name"
+    },
+    {
+      "name": "PORT",
+      "type": "integer",
+      "default": 8000,
+      "description": "Порт для запуска MCP сервера",
+      "required": false,
+      "validation": {
+        "min": 1024,
+        "max": 65535
+      },
+      "example": 8000
+    },
+    {
+      "name": "HOST",
+      "type": "string",
+      "default": "0.0.0.0",
+      "description": "Хост для запуска MCP сервера",
+      "required": false,
+      "validation": {
+        "pattern": "^[a-zA-Z0-9\\.\\-]+$"
+      },
+      "example": "0.0.0.0"
+    },
+    {
+      "name": "LOG_LEVEL",
+      "type": "string",
+      "default": "INFO",
+      "description": "Уровень логирования (DEBUG, INFO, WARNING, ERROR, CRITICAL)",
+      "required": false,
+      "validation": {
+        "enum": ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
+      },
+      "example": "INFO"
+    },
+    {
+      "name": "MAX_FILE_SIZE_MB",
+      "type": "integer",
+      "default": 100,
+      "description": "Максимальный размер файла для загрузки в МБ (от 1 до 5000)",
+      "required": false,
+      "validation": {
+        "min": 1,
+        "max": 5000
+      },
+      "example": 100
+    },
+    {
+      "name": "MAX_LIST_OBJECTS",
+      "type": "integer",
+      "default": 1000,
+      "description": "Максимальное количество объектов при листинге (от 1 до 10000)",
+      "required": false,
+      "validation": {
+        "min": 1,
+        "max": 10000
+      },
+      "example": 1000
+    },
+    {
+      "name": "ALLOWED_EXTENSIONS",
+      "type": "string",
+      "default": "",
+      "description": "Разрешённые расширения файлов через запятую. Если не задано — все расширения разрешены.",
+      "required": false,
+      "validation": {
+        "pattern": "^([a-zA-Z0-9]+,?)*$"
+      },
+      "example": "pdf,docx,xlsx,txt,json"
+    }
+  ],
+  "metadata": {
+    "version": "1.0.0",
+    "description": "Описание переменных окружения для MCP Object Storage Server",
+    "usage": {
+      "docker": "Передавайте переменные через -e или --env-file",
+      "local": "Создайте файл .env в корне проекта или экспортируйте переменные в shell",
+      "example": ".env.example содержит примеры всех переменных"
+    },
+    "notes": [
+      "AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY и S3_BUCKET_NAME — обязательные параметры",
+      "Для S3-совместимых хранилищ (MinIO, Yandex, и т.д.) укажите S3_ENDPOINT_URL",
+      "Лимиты (MAX_*) можно настроить в зависимости от требований безопасности",
+      "ALLOWED_EXTENSIONS позволяет ограничить типы загружаемых файлов"
+    ]
+  }
+}

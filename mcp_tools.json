@@ -1,0 +1,209 @@
+{
+  "tools": [
+    {
+      "name": "upload_file",
+      "description": "Загрузка файла в S3 Object Storage. Этот инструмент позволяет загружать файлы в облачное хранилище S3. Поддерживает загрузку текстовых файлов напрямую и бинарных файлов через base64 кодирование. Включает проверку на существование файла (conflict detection) и валидацию пути для защиты от directory traversal атак. КОГДА ИСПОЛЬЗОВАТЬ: когда нужно сохранить файл в облачное хранилище, создать резервную копию или поделиться файлом между системами. По умолчанию перезапись существующих файлов запрещена — используйте overwrite=true для перезаписи.",
+      "parameters": {
+        "key": {
+          "type": "string",
+          "description": "Путь к файлу в бакете (например: 'documents/report.pdf'). Не может содержать '..' или начинаться с '/'.",
+          "required": true
+        },
+        "content": {
+          "type": "string",
+          "description": "Содержимое файла. Для текстовых файлов — обычная строка. Для бинарных — base64 строка (установите is_base64=true).",
+          "required": true
+        },
+        "content_type": {
+          "type": "string",
+          "description": "MIME тип файла (например: 'text/plain', 'application/pdf', 'image/png')",
+          "required": false,
+          "default": "application/octet-stream"
+        },
+        "bucket": {
+          "type": "string",
+          "description": "Имя бакета S3. Если не указано, используется бакет из настроек.",
+          "required": false
+        },
+        "overwrite": {
+          "type": "boolean",
+          "description": "Разрешить перезапись существующего файла. По умолчанию False.",
+          "required": false,
+          "default": false
+        },
+        "is_base64": {
+          "type": "boolean",
+          "description": "Если True, параметр content интерпретируется как base64-закодированные данные.",
+          "required": false,
+          "default": false
+        }
+      },
+      "returns": {
+        "type": "dict",
+        "description": "Объект с полями: success (boolean), message (string), data (информация о загруженном файле: key, bucket, size_bytes, content_type, uploaded_at)"
+      },
+      "errors": [
+        {
+          "error": "validation_error",
+          "description": "Возникает при невалидном пути, недопустимом расширении файла или превышении лимита размера"
+        },
+        {
+          "error": "conflict_error",
+          "description": "Возникает при попытке перезаписи существующего файла без флага overwrite=true"
+        },
+        {
+          "error": "upload_error",
+          "description": "Общая ошибка при загрузке файла (проблемы с S3, сетью и т.д.)"
+        }
+      ],
+      "notes": "Защита от directory traversal атак. Конфликт-детекция предотвращает случайную перезапись файлов."
+    },
+    {
+      "name": "download_file",
+      "description": "Скачивание файла из S3 Object Storage. Этот инструмент позволяет получить содержимое файла из облачного хранилища S3. КОГДА ИСПОЛЬЗОВАТЬ: когда нужно получить содержимое файла из хранилища, прочитать ранее сохранённый документ или получить данные для обработки. Текстовые файлы возвращаются как UTF-8 строки, бинарные файлы — в base64 формате.",
+      "parameters": {
+        "key": {
+          "type": "string",
+          "description": "Путь к файлу в бакете (например: 'documents/report.pdf'). Должен точно соответствовать ключу объекта в S3.",
+          "required": true
+        },
+        "bucket": {
+          "type": "string",
+          "description": "Имя бакета S3. Если не указано, используется бакет из настроек.",
+          "required": false
+        },
+        "as_base64": {
+          "type": "boolean",
+          "description": "Вернуть содержимое в base64 формате. Полезно для бинарных файлов.",
+          "required": false,
+          "default": false
+        }
+      },
+      "returns": {
+        "type": "dict",
+        "description": "Объект с полями: success (boolean), message (string), data (содержимое файла и метаданные: key, bucket, size_bytes, content_type, last_modified, etag, content, encoding)"
+      },
+      "errors": [
+        {
+          "error": "validation_error",
+          "description": "Возникает при невалидном пути или если файл не найден"
+        },
+        {
+          "error": "download_error",
+          "description": "Общая ошибка при скачивании файла"
+        }
+      ],
+      "notes": "Автоматически определяет формат ответа: UTF-8 для текста, base64 для бинарных данных."
+    },
+    {
+      "name": "list_files",
+      "description": "Получение списка файлов из S3 Object Storage. Этот инструмент позволяет получить список файлов в бакете S3 с возможностью фильтрации по префиксу. КОГДА ИСПОЛЬЗОВАТЬ: когда нужно узнать какие файлы есть в хранилище, найти файлы в определённой директории или получить метаданные нескольких файлов. Используйте prefix для фильтрации по пути.",
+      "parameters": {
+        "prefix": {
+          "type": "string",
+          "description": "Префикс для фильтрации файлов (например: 'documents/', 'images/2024/'). Оставьте пустым для получения всех файлов.",
+          "required": false,
+          "default": ""
+        },
+        "bucket": {
+          "type": "string",
+          "description": "Имя бакета S3. Если не указано, используется бакет из настроек.",
+          "required": false
+        },
+        "max_keys": {
+          "type": "integer",
+          "description": "Максимальное количество файлов в ответе. По умолчанию используется значение из настроек (обычно 1000).",
+          "required": false
+        }
+      },
+      "returns": {
+        "type": "dict",
+        "description": "Объект с полями: success (boolean), message (string), data (bucket, prefix, files[], total_count, total_size_bytes). Каждый файл содержит: key, size_bytes, last_modified, etag, storage_class."
+      },
+      "errors": [
+        {
+          "error": "validation_error",
+          "description": "Возникает при невалидном префиксе"
+        },
+        {
+          "error": "list_error",
+          "description": "Общая ошибка при получении списка файлов"
+        }
+      ],
+      "notes": "Результаты ограничены настройкой MAX_LIST_OBJECTS для предотвращения перегрузки."
+    },
+    {
+      "name": "get_file_info",
+      "description": "Получение информации о файле в S3 Object Storage без скачивания содержимого. КОГДА ИСПОЛЬЗОВАТЬ: когда нужно узнать размер файла, проверить существование файла, получить дату последнего изменения или узнать тип содержимого (MIME type). Этот инструмент быстрее и экономичнее чем download_file для проверки метаданных.",
+      "parameters": {
+        "key": {
+          "type": "string",
+          "description": "Путь к файлу в бакете (например: 'documents/report.pdf'). Должен точно соответствовать ключу объекта в S3.",
+          "required": true
+        },
+        "bucket": {
+          "type": "string",
+          "description": "Имя бакета S3. Если не указано, используется бакет из настроек.",
+          "required": false
+        }
+      },
+      "returns": {
+        "type": "dict",
+        "description": "Объект с полями: success (boolean), message (string), data (метаданные файла: key, bucket, size_bytes, content_type, last_modified, etag, metadata, storage_class, exists)"
+      },
+      "errors": [
+        {
+          "error": "validation_error",
+          "description": "Возникает при невалидном пути или если файл не найден"
+        },
+        {
+          "error": "info_error",
+          "description": "Общая ошибка при получении информации о файле"
+        }
+      ],
+      "notes": "Не скачивает содержимое файла — экономит трафик и время."
+    },
+    {
+      "name": "delete_file",
+      "description": "Удаление файла из S3 Object Storage. КОГДА ИСПОЛЬЗОВАТЬ: когда нужно освободить место в хранилище, удалить ненужный файл или удалить устаревшие данные. ПРЕДУПРЕЖДЕНИЕ: удаление необратимо! Рекомендуется сначала сделать резервную копию.",
+      "parameters": {
+        "key": {
+          "type": "string",
+          "description": "Путь к файлу в бакете для удаления (например: 'documents/old_report.pdf'). Должен точно соответствовать ключу объекта в S3.",
+          "required": true
+        },
+        "bucket": {
+          "type": "string",
+          "description": "Имя бакета S3. Если не указано, используется бакет из настроек.",
+          "required": false
+        }
+      },
+      "returns": {
+        "type": "dict",
+        "description": "Объект с полями: success (boolean), message (string), data (информация об удалении: key, bucket, deleted, deleted_at)"
+      },
+      "errors": [
+        {
+          "error": "validation_error",
+          "description": "Возникает при невалидном пути или если файл не найден"
+        },
+        {
+          "error": "delete_error",
+          "description": "Общая ошибка при удалении файла"
+        }
+      ],
+      "notes": "Удаление необратимо. Файл должен существовать для успешного удаления."
+    }
+  ],
+  "metadata": {
+    "version": "1.0.0",
+    "server_name": "mcp-object-storage-server",
+    "description": "MCP сервер для работы с AWS S3 Object Storage: загрузка, скачивание, листинг и управление файлами",
+    "transport": "streamable-http",
+    "security": {
+      "path_safety": "Защита от directory traversal атак",
+      "conflict_detection": "Предотвращение случайной перезаписи файлов",
+      "file_validation": "Валидация размера и расширений файлов"
+    }
+  }
+}
