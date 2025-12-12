@@ -1,17 +1,4 @@
-#!/usr/bin/env python3
-"""
-Скрипт для тестирования подключения к S3.
-Проверяет, что конфигурация корректна и S3 доступен.
-
-Использование:
-    uv run python scripts/test_s3_connection.py
-"""
-
 import sys
-from pathlib import Path
-
-# Добавляем корень проекта в PYTHONPATH
-sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from src.core.settings import get_settings
 from src.services.s3_service import S3Service
@@ -22,7 +9,6 @@ def main():
     print("ТЕСТ ПОДКЛЮЧЕНИЯ К S3")
     print("=" * 60)
 
-    # Получаем настройки
     settings = get_settings()
 
     print(f"AWS Region: {settings.AWS_REGION}")
@@ -31,7 +17,6 @@ def main():
     print(f"Access Key ID: {settings.AWS_ACCESS_KEY_ID[:4]}...{settings.AWS_ACCESS_KEY_ID[-4:]}")
     print("=" * 60)
 
-    # Проверяем обязательные поля
     try:
         settings.validate_required_fields()
         print("[OK] Все обязательные поля заполнены")
@@ -39,10 +24,8 @@ def main():
         print(f"[ERROR] Ошибка конфигурации: {e}")
         return 1
 
-    # Создаём S3 сервис
     s3_service = S3Service(settings)
 
-    # Тест 1: Получение списка файлов
     print("\n[TEST 1] Получение списка файлов...")
     try:
         result = s3_service.list_files(max_keys=10)
@@ -55,7 +38,6 @@ def main():
         print(f"  [ERROR] Ошибка: {e}")
         return 1
 
-    # Тест 2: Загрузка тестового файла
     print("\n[TEST 2] Загрузка тестового файла...")
     test_key = "_test_connection_file.txt"
     test_content = "Hello from S3 connection test!"
@@ -72,7 +54,6 @@ def main():
         print(f"  [ERROR] Ошибка: {e}")
         return 1
 
-    # Тест 3: Проверка существования файла
     print("\n[TEST 3] Проверка существования файла...")
     try:
         exists = s3_service.check_file_exists(test_key)
@@ -85,14 +66,13 @@ def main():
         print(f"  [ERROR] Ошибка: {e}")
         return 1
 
-    # Тест 4: Скачивание файла
     print("\n[TEST 4] Скачивание файла...")
     try:
         result = s3_service.download_file(key=test_key)
         if result["content"] == test_content:
-            print(f"  [OK] Содержимое файла совпадает")
+            print("  [OK] Содержимое файла совпадает")
         else:
-            print(f"  [ERROR] Содержимое не совпадает!")
+            print("  [ERROR] Содержимое не совпадает!")
             print(f"    Ожидалось: {test_content}")
             print(f"    Получено: {result['content']}")
             return 1
@@ -100,7 +80,6 @@ def main():
         print(f"  [ERROR] Ошибка: {e}")
         return 1
 
-    # Тест 5: Удаление тестового файла
     print("\n[TEST 5] Удаление тестового файла...")
     try:
         result = s3_service.delete_file(key=test_key)

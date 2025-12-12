@@ -1,108 +1,110 @@
-# MCP Object Storage Server
+# Object Storage MCP Server
 
-MCP сервер для работы с AWS S3 Object Storage. Позволяет AI-агентам загружать, скачивать, управлять файлами в облачном хранилище.
+[![CI](https://github.com/creafly/object-storage-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/creafly/object-storage-mcp/actions/workflows/ci.yml)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Issues](https://img.shields.io/github/issues/creafly/object-storage-mcp)](https://github.com/creafly/object-storage-mcp/issues)
+[![Pull Requests](https://img.shields.io/github/issues-pr/creafly/object-storage-mcp)](https://github.com/creafly/object-storage-mcp/pulls)
 
-## Возможности
+MCP server for working with AWS S3 Object Storage. Allows AI agents to upload, download, and manage files in cloud storage.
 
-- **upload_file** — загрузка файлов в S3 (поддержка текста и base64)
-- **download_file** — скачивание файлов из S3
-- **list_files** — получение списка файлов с фильтрацией по префиксу
-- **get_file_info** — получение метаданных файла без скачивания
-- **delete_file** — удаление файлов
+## Features
 
-### Безопасность
+- **upload_file** — Upload files to S3 (supports text and base64)
+- **download_file** — Download files from S3
+- **list_files** — List files with prefix filtering
+- **get_file_info** — Get file metadata without downloading
+- **delete_file** — Delete files
 
-- **Path Safety** — защита от directory traversal атак (запрет `..` и абсолютных путей)
-- **Conflict Detection** — предотвращение случайной перезаписи файлов
-- **File Validation** — валидация размера и расширений файлов
+### Security
 
-## Требования
+- **Path Safety** — Protection against directory traversal attacks (blocks `..` and absolute paths)
+- **Conflict Detection** — Prevents accidental file overwriting
+- **File Validation** — Validates file size and extensions
+
+## Requirements
 
 - Python 3.11+
-- AWS S3 или S3-совместимое хранилище (MinIO, Yandex Object Storage и т.д.)
+- AWS S3 or S3-compatible storage (MinIO, Yandex Object Storage, etc.)
 
-## Установка
-
-### 1. Клонирование и настройка окружения
+## Installation
 
 ```bash
-cd ObjectStorageMCP
+cd object-storage-mcp
 
-# Активация виртуального окружения
+# Activate virtual environment
 source .venv/bin/activate
 
-# Установка зависимостей
+# Install dependencies
 uv sync
 ```
 
-### 2. Настройка переменных окружения
+## Configuration
 
-Создайте файл `.env` в корне проекта:
+Create a `.env` file in the project root:
 
 ```env
-# Обязательные переменные
+# Required variables
 AWS_ACCESS_KEY_ID=your_access_key_id
 AWS_SECRET_ACCESS_KEY=your_secret_access_key
 S3_BUCKET_NAME=your-bucket-name
 
-# Опциональные переменные
+# Optional variables
 AWS_REGION=us-east-1
-S3_ENDPOINT_URL=https://storage.yandexcloud.net  # для S3-совместимых хранилищ
+S3_ENDPOINT_URL=https://storage.yandexcloud.net  # for S3-compatible storage
 PORT=8000
 HOST=0.0.0.0
 LOG_LEVEL=INFO
 
-# Лимиты безопасности
+# Security limits
 MAX_FILE_SIZE_MB=100
 MAX_LIST_OBJECTS=1000
-ALLOWED_EXTENSIONS=pdf,docx,xlsx,txt,json  # опционально, если не задано — все разрешены
+ALLOWED_EXTENSIONS=pdf,docx,xlsx,txt,json  # optional, if not set — all allowed
 ```
 
-## Запуск
-
-### Локальный запуск
+## Running
 
 ```bash
-# Активация окружения
+# Activate environment
 source .venv/bin/activate
 
-# Запуск сервера
+# Start the server
 python -m src.entrypoints.server
 ```
 
-Сервер будет доступен по адресу: `http://localhost:8000/mcp`
+Server will be available at: `http://localhost:8000/mcp`
 
-### Запуск через Docker
+## Docker
 
 ```bash
-# Сборка образа
+# Build image
 make build
 
-# Запуск с переменными окружения из .env
+# Run with environment variables from .env
 make run
 ```
 
-## Переменные окружения
+## Environment Variables
 
-| Переменная              | Обязательная | По умолчанию | Описание                                      |
-| ----------------------- | ------------ | ------------ | --------------------------------------------- |
-| `AWS_ACCESS_KEY_ID`     | Да           | —            | AWS Access Key ID                             |
-| `AWS_SECRET_ACCESS_KEY` | Да           | —            | AWS Secret Access Key                         |
-| `S3_BUCKET_NAME`        | Да           | —            | Имя бакета S3                                 |
-| `AWS_REGION`            | Нет          | `us-east-1`  | AWS регион                                    |
-| `S3_ENDPOINT_URL`       | Нет          | —            | Endpoint для S3-совместимых хранилищ          |
-| `PORT`                  | Нет          | `8000`       | Порт сервера                                  |
-| `HOST`                  | Нет          | `0.0.0.0`    | Хост сервера                                  |
-| `LOG_LEVEL`             | Нет          | `INFO`       | Уровень логирования                           |
-| `MAX_FILE_SIZE_MB`      | Нет          | `100`        | Максимальный размер файла (МБ)                |
-| `MAX_LIST_OBJECTS`      | Нет          | `1000`       | Максимальное количество объектов при листинге |
-| `ALLOWED_EXTENSIONS`    | Нет          | —            | Разрешённые расширения через запятую          |
+| Variable                | Required | Default     | Description                          |
+| ----------------------- | -------- | ----------- | ------------------------------------ |
+| `AWS_ACCESS_KEY_ID`     | Yes      | —           | AWS Access Key ID                    |
+| `AWS_SECRET_ACCESS_KEY` | Yes      | —           | AWS Secret Access Key                |
+| `S3_BUCKET_NAME`        | Yes      | —           | S3 bucket name                       |
+| `AWS_REGION`            | No       | `us-east-1` | AWS region                           |
+| `S3_ENDPOINT_URL`       | No       | —           | Endpoint for S3-compatible storage   |
+| `PORT`                  | No       | `8000`      | Server port                          |
+| `HOST`                  | No       | `0.0.0.0`   | Server host                          |
+| `LOG_LEVEL`             | No       | `INFO`      | Logging level                        |
+| `MAX_FILE_SIZE_MB`      | No       | `100`       | Maximum file size (MB)               |
+| `MAX_LIST_OBJECTS`      | No       | `1000`      | Maximum objects when listing         |
+| `ALLOWED_EXTENSIONS`    | No       | —           | Allowed extensions (comma-separated) |
 
-## Использование инструментов
+## Tool Usage
 
 ### upload_file
 
-Загрузка файла в S3:
+Upload a file to S3:
 
 ```json
 {
@@ -116,7 +118,7 @@ make run
 
 ### download_file
 
-Скачивание файла:
+Download a file:
 
 ```json
 {
@@ -127,7 +129,7 @@ make run
 
 ### list_files
 
-Получение списка файлов:
+Get list of files:
 
 ```json
 {
@@ -138,7 +140,7 @@ make run
 
 ### get_file_info
 
-Получение информации о файле:
+Get file information:
 
 ```json
 {
@@ -148,7 +150,7 @@ make run
 
 ### delete_file
 
-Удаление файла:
+Delete a file:
 
 ```json
 {
@@ -156,32 +158,22 @@ make run
 }
 ```
 
-## Тестирование
+## Development
 
 ```bash
-# Активация окружения
-source .venv/bin/activate
-
-# Установка dev-зависимостей
+# Install dev dependencies
 uv sync --group dev
 
-# Запуск тестов
+# Run linting
+make lint
+
+# Run tests
 make test
 
-# Запуск с покрытием
+# Run tests with coverage
 make test-cov
 ```
 
-## Docker
+## License
 
-### Сборка
-
-```bash
-make build
-```
-
-### Push в registry
-
-```bash
-make push REGISTRY=your.registry.com VERSION=1.0.0
-```
+MIT

@@ -23,9 +23,7 @@ def main():
     if settings.S3_ENDPOINT_URL:
         logger.info(f"Endpoint: {settings.S3_ENDPOINT_URL}")
 
-    tool_count = (
-        len(mcp._tool_manager._tools) if hasattr(mcp, "_tool_manager") else "unknown"
-    )
+    tool_count = len(mcp._tool_manager._tools) if hasattr(mcp, "_tool_manager") else "unknown"
     logger.info(f"Зарегистрировано инструментов: {tool_count}")
     logger.info("=" * 60)
 

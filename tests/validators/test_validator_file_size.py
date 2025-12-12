@@ -25,7 +25,5 @@ class TestValidateFileSize:
 
     def test_exceeds_limit_raises(self):
         """Превышение лимита вызывает ошибку."""
-        with pytest.raises(
-            PathValidationError, match="превышает максимально допустимый"
-        ):
+        with pytest.raises(PathValidationError, match="превышает максимально допустимый"):
             validate_file_size(200 * 1024 * 1024, 100 * 1024 * 1024)

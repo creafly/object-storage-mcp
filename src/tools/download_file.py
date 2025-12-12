@@ -80,9 +80,7 @@ async def download_file(
 
         if ctx:
             await ctx.report_progress(progress=100, total=100)
-            await ctx.info(
-                f"Файл успешно скачан: {result['key']} ({result['size_bytes']} байт)"
-            )
+            await ctx.info(f"Файл успешно скачан: {result['key']} ({result['size_bytes']} байт)")
 
         return {
             "success": True,

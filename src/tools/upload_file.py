@@ -83,10 +83,7 @@ async def upload_file(
         await ctx.info(f"Загружаем файл: {key}")
         await ctx.report_progress(progress=0, total=100)
 
-    logger.info(
-        f"[upload_file] Вызван с key={key}, "
-        + f"bucket={bucket}, overwrite={overwrite}"
-    )
+    logger.info(f"[upload_file] Вызван с key={key}, " + f"bucket={bucket}, overwrite={overwrite}")
 
     try:
         settings = get_settings()

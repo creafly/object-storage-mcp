@@ -36,8 +36,7 @@ logger = logging.getLogger("mcp_object_storage")
 async def list_files(
     prefix: str = Field(
         default="",
-        description="Префикс для фильтрации файлов "
-        + "(например: 'documents/', 'images/2024/')."
+        description="Префикс для фильтрации файлов " + "(например: 'documents/', 'images/2024/')."
         "Оставьте пустым для получения всех файлов.",
     ),
     bucket: Optional[str] = Field(
@@ -68,9 +67,7 @@ async def list_files(
         await ctx.info(f"Получаем список файлов{filter_msg}")
         await ctx.report_progress(progress=0, total=100)
 
-    logger.info(
-        f"[list_files] Вызван с prefix={prefix}, bucket={bucket}, max_keys={max_keys}"
-    )
+    logger.info(f"[list_files] Вызван с prefix={prefix}, bucket={bucket}, max_keys={max_keys}")
 
     try:
         settings = get_settings()

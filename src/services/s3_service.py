@@ -168,9 +168,7 @@ class S3Service:
                 "size_bytes": response["ContentLength"],
                 "content_type": response.get("ContentType", "application/octet-stream"),
                 "last_modified": (
-                    response["LastModified"].isoformat()
-                    if response.get("LastModified")
-                    else None
+                    response["LastModified"].isoformat() if response.get("LastModified") else None
                 ),
                 "etag": response.get("ETag", "").strip('"'),
             }
@@ -191,9 +189,7 @@ class S3Service:
 
         except ClientError as e:
             if e.response["Error"]["Code"] == "NoSuchKey":
-                raise PathValidationError(
-                    f"Файл '{safe_key}' не найден в бакете '{bucket}'"
-                )
+                raise PathValidationError(f"Файл '{safe_key}' не найден в бакете '{bucket}'")
             raise
 
     def list_files(
@@ -214,9 +210,7 @@ class S3Service:
             Список файлов с метаданными
         """
         bucket = bucket or self.settings.S3_BUCKET_NAME
-        max_keys = min(
-            max_keys or self.settings.MAX_LIST_OBJECTS, self.settings.MAX_LIST_OBJECTS
-        )
+        max_keys = min(max_keys or self.settings.MAX_LIST_OBJECTS, self.settings.MAX_LIST_OBJECTS)
 
         if prefix:
             prefix = validate_path_safety(prefix)
@@ -236,9 +230,7 @@ class S3Service:
                     "key": obj["Key"],
                     "size_bytes": obj["Size"],
                     "last_modified": (
-                        obj["LastModified"].isoformat()
-                        if obj.get("LastModified")
-                        else None
+                        obj["LastModified"].isoformat() if obj.get("LastModified") else None
                     ),
                     "etag": obj.get("ETag", "").strip('"'),
                     "storage_class": obj.get("StorageClass", "STANDARD"),
@@ -282,15 +274,12 @@ class S3Service:
         """
         bucket = bucket or self.settings.S3_BUCKET_NAME
 
-        # Валидация пути
         safe_key = validate_path_safety(key)
 
         try:
             response = self.client.head_object(Bucket=bucket, Key=safe_key)
 
-            logger.info(
-                f"Получена информация о файле '{safe_key}' из бакета '{bucket}'"
-            )
+            logger.info(f"Получена информация о файле '{safe_key}' из бакета '{bucket}'")
 
             return {
                 "key": safe_key,
@@ -298,9 +287,7 @@ class S3Service:
                 "size_bytes": response["ContentLength"],
                 "content_type": response.get("ContentType", "application/octet-stream"),
                 "last_modified": (
-                    response["LastModified"].isoformat()
-                    if response.get("LastModified")
-                    else None
+                    response["LastModified"].isoformat() if response.get("LastModified") else None
                 ),
                 "etag": response.get("ETag", "").strip('"'),
                 "metadata": response.get("Metadata", {}),
@@ -310,9 +297,7 @@ class S3Service:
 
         except ClientError as e:
             if e.response["Error"]["Code"] == "404":
-                raise PathValidationError(
-                    f"Файл '{safe_key}' не найден в бакете '{bucket}'"
-                )
+                raise PathValidationError(f"Файл '{safe_key}' не найден в бакете '{bucket}'")
             raise
 
     def delete_file(
@@ -338,9 +323,7 @@ class S3Service:
         safe_key = validate_path_safety(key)
 
         if not self.check_file_exists(safe_key, bucket):
-            raise PathValidationError(
-                f"Файл '{safe_key}' не найден в бакете '{bucket}'"
-            )
+            raise PathValidationError(f"Файл '{safe_key}' не найден в бакете '{bucket}'")
 
         self.client.delete_object(Bucket=bucket, Key=safe_key)
 

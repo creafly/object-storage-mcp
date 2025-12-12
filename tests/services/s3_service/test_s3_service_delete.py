@@ -22,7 +22,6 @@ class TestS3ServiceDelete:
         assert result["key"] == "to_delete.txt"
         assert result["deleted"] is True
 
-        # Проверяем, что файл удалён
         assert not service.check_file_exists("to_delete.txt")
 
     @mock_aws

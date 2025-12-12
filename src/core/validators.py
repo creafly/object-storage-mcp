@@ -41,14 +41,10 @@ def validate_path_safety(path: str) -> str:
         raise PathValidationError("Путь содержит недопустимые символы (null-байт)")
 
     if path.startswith("/") or path.startswith("\\"):
-        raise PathValidationError(
-            "Абсолютные пути не разрешены. Используйте относительный путь"
-        )
+        raise PathValidationError("Абсолютные пути не разрешены. Используйте относительный путь")
 
     if ".." in path:
-        raise PathValidationError(
-            "Directory traversal атака обнаружена: '..' не разрешено в пути"
-        )
+        raise PathValidationError("Directory traversal атака обнаружена: '..' не разрешено в пути")
 
     normalized = PurePosixPath(path).as_posix()
 
@@ -64,9 +60,7 @@ def validate_path_safety(path: str) -> str:
     return normalized
 
 
-def validate_file_extension(
-    filename: str, allowed_extensions: list[str] | None
-) -> None:
+def validate_file_extension(filename: str, allowed_extensions: list[str] | None) -> None:
     """
     Проверка расширения файла.
 
@@ -145,8 +139,6 @@ def validate_bucket_name(bucket_name: str) -> str:
         )
 
     if "--" in bucket_name:
-        raise PathValidationError(
-            "Имя бакета не может содержать последовательные дефисы"
-        )
+        raise PathValidationError("Имя бакета не может содержать последовательные дефисы")
 
     return bucket_name

@@ -46,7 +46,7 @@ class TestS3ServiceUpload:
         )
 
         assert result["key"] == "test/binary.bin"
-        assert result["size_bytes"] == 14  # len("Binary content")
+        assert result["size_bytes"] == 14
 
     @mock_aws
     def test_upload_conflict_without_overwrite(self, settings):
@@ -56,10 +56,8 @@ class TestS3ServiceUpload:
 
         service = S3Service(settings)
 
-        # Первая загрузка
         service.upload_file(key="test/file.txt", content="First")
 
-        # Вторая загрузка без overwrite
         with pytest.raises(ConflictError, match="уже существует"):
             service.upload_file(key="test/file.txt", content="Second")
 
@@ -71,14 +69,10 @@ class TestS3ServiceUpload:
 
         service = S3Service(settings)
 
-        # Первая загрузка
         service.upload_file(key="test/file.txt", content="First")
 
-        # Вторая загрузка с overwrite
-        result = service.upload_file(
-            key="test/file.txt", content="Second", overwrite=True
-        )
-        assert result["size_bytes"] == 6  # len("Second")
+        result = service.upload_file(key="test/file.txt", content="Second", overwrite=True)
+        assert result["size_bytes"] == 6
 
     @mock_aws
     def test_upload_directory_traversal_blocked(self, settings):

@@ -12,13 +12,9 @@ load_dotenv()
 class Settings(BaseSettings):
     """Настройки приложения для работы с AWS S3."""
 
-    APP_NAME: str = Field(
-        default="Object Storage S3", description="Название приложения"
-    )
+    APP_NAME: str = Field(default="Object Storage S3", description="Название приложения")
 
-    AWS_ACCESS_KEY_ID: str = Field(
-        default="", description="AWS Access Key ID для доступа к S3"
-    )
+    AWS_ACCESS_KEY_ID: str = Field(default="", description="AWS Access Key ID для доступа к S3")
     AWS_SECRET_ACCESS_KEY: str = Field(
         default="", description="AWS Secret Access Key для доступа к S3"
     )
@@ -32,9 +28,7 @@ class Settings(BaseSettings):
     )
     S3_BUCKET_NAME: str = Field(default="", description="Имя бакета S3 по умолчанию")
 
-    PORT: int = Field(
-        default=8000, ge=1024, le=65535, description="Порт для запуска MCP сервера"
-    )
+    PORT: int = Field(default=8000, ge=1024, le=65535, description="Порт для запуска MCP сервера")
     HOST: str = Field(default="0.0.0.0", description="Хост для запуска MCP сервера")
     LOG_LEVEL: str = Field(default="INFO", description="Уровень логирования")
 
